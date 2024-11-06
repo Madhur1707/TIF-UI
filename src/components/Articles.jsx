@@ -1,6 +1,15 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const articles = [
   { title: "Grilled Tomatoes", image: "/tomato.png" },
@@ -21,9 +30,13 @@ const Articles = () => {
   // Get current articles to display
   const indexOfLastArticle = currentPage * itemsPerPage;
   const indexOfFirstArticle = indexOfLastArticle - itemsPerPage;
-  const currentArticles = articles.slice(indexOfFirstArticle, indexOfLastArticle);
+  const currentArticles = articles.slice(
+    indexOfFirstArticle,
+    indexOfLastArticle
+  );
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page, event) => {
+    event.preventDefault();
     setCurrentPage(page);
   };
 
@@ -45,26 +58,64 @@ const Articles = () => {
               {article.title}
             </h4>
             <p className="text-gray-600 mt-2">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+              nec odio. Praesent libero.
             </p>
-            <Button className="bg-white text-black border border-black mt-4 rounded-3xl h-8">
+            <Button className="bg-white text-black border border-black mt-4 rounded-3xl h-8 hover:bg-primary hover:text-white cursor-pointer">
               Read More
             </Button>
           </Card>
         ))}
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex justify-center mt-8">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <Button
-            key={i + 1}
-            className={`mx-2 ${currentPage === i + 1 ? 'bg-primary text-white' : 'bg-white text-black border border-black'}`}
-            onClick={() => handlePageChange(i + 1)}
-          >
-            {i + 1}
-          </Button>
-        ))}
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={(e) => {
+                  if (currentPage > 1) {
+                    handlePageChange(currentPage - 1, e);
+                  }
+                }}
+                className="cursor-pointer hover:bg-default hover:text-black"
+              />
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <PaginationItem key={i + 1}>
+                <PaginationLink
+                  href="#"
+                  className={`cursor-pointer ${
+                    currentPage === i + 1
+                      ? "bg-primary text-white"
+                      : "bg-white text-black border border-black"
+                  } hover:bg-primary hover:text-white`}
+                  onClick={(e) => handlePageChange(i + 1, e)}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            {totalPages > 3 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={(e) => {
+                  if (currentPage < totalPages) {
+                    handlePageChange(currentPage + 1, e);
+                  }
+                }}
+                className="cursor-pointer hover:bg-default hover:text-black"
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </section>
   );
